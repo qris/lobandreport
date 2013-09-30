@@ -1,0 +1,43 @@
+.grid-main-col form {
+	padding: 1em 1em 0;
+}
+.loading_wrapper {
+	position: relative;
+	display: inline-block;
+}
+.loading_iframe {
+	width: 600px;
+	height: 400px;
+	margin: 0 1em 1em;
+}
+.loading_overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+}
+.loading_td {
+	vertical-align: middle;
+	text-align: center;
+}
+.loading_popup {
+	display: inline-block;
+	text-align: center;
+	padding: 1em;
+	border: 2px solid black;
+	color: white;
+	
+	/* Fallback for web browsers that doesn't support RGBa */
+	background: rgb(0, 0, 0) transparent;
+	/* RGBa with 0.6 opacity */
+	background: rgba(0, 0, 0, 0.6);
+	/* For IE 5.5 - 7*/
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+.loading_popup img {
+	width: auto;
+}
+.loading_text {
+	margin: 1em 0 0;
+}

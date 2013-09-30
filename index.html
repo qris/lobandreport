@@ -1,167 +1,44 @@
 <html>
+<head>
+	<link rel="stylesheet" href="lobandreport.css" />
+</head>
 <body>
 
-<style>
-#loading-wrapper {
-	position: relative;
-	display: inline-block;
-}
-#loading-overlay {
-	display: none;
-	position: absolute;
-	top: 0;
-}
-#loading-td {
-	vertical-align: middle;
-	text-align: center;
-}
-#loading-popup {
-	display: inline-block;
-	text-align: center;
-	padding: 1em;
-	border: 2px solid black;
-	color: white;
-	
-	/* Fallback for web browsers that doesn't support RGBa */
-	background: rgb(0, 0, 0) transparent;
-	/* RGBa with 0.6 opacity */
-	background: rgba(0, 0, 0, 0.6);
-	/* For IE 5.5 - 7*/
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
-	/* For IE 8*/
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
-}
-#loading-text {
-	margin: 1em 0 0;
-}
-</style>
+<div class="grid-main-col">
 
 <form name="main_form" onsubmit="return original();">
 <p>
-	<input name="url" type="text" />
+	<input type="text" name="url" />
 	<input type="submit" value="Test" />
 </p>
 <p>
-	Time taken: <input name="time_taken" type="text" size="3" readonly="true" /> seconds
+	Time taken: <span class="time_taken field">&hellip;</span> seconds
 </p>
 <p>
-	Page size: <input name="page_size" type="text" size="3" readonly="true" /> kB
+	Page size: <span class="page_size field">&hellip;</span> kB
 </p>
 </form>
 
-<div id="loading-wrapper">
-<iframe id="original" src="JavaScript:''" width="600" height="400"></iframe>
-<table id="loading-overlay" style="width: 100%; height: 100%;">
-	<tr><td id="loading-td">
-		<div id="loading-popup">
-			<img src="ajax-loader.gif">
-			<p id="loading-text">Loading... <span id="loading-timer"></span></p>
+<div class="loading_wrapper">
+<table class="loading_overlay">
+	<tbody><tr><td class="loading_td">
+		<div class="loading_popup">
+			<img src="ajax-loader.gif" />
+			<p class="loading_text">Loading... <span class="loading_timer"></span></p>
 		</div>
 	</td></tr>
-</table>
-</div>
+</tbody></table>
+</div><!-- loading_wrapper -->
+
+</div><!-- grid-main-col -->
 
 <!-- <script type="text/javascript" src="jquip.ajax.min.js"></script> -->
 <script>
 document.write('<script src=' +
-('__proto__' in {} ? 'zepto.min' : 'jquery-2.0.3.min') +
+('__proto__' in {} ? 'zepto' : 'jquery-2.0.3.min') +
 '.js><\/script>')
 </script>
-<script type="text/javascript">
-var iframe = document.getElementById('original');
-var loading_overlay = document.getElementById('loading-overlay');
-var loading_timer = document.getElementById('loading-timer');
-var time_taken = document.main_form.time_taken;
-var page_size = document.main_form.page_size;
-
-function original() {
-	try
-	{
-		var url = document.main_form.url.value;
-		var bps = 250000;
-		iframe.src = 'http://www.loband.org/loband/page?_ab_key=2&_ab_bps=' +
-			bps + '&_ab_nofilter&_ab_url=' + url;
-		loading_overlay.style.display = "block";
-
-		time_taken.value = "...";
-		loading_timer.innerHTML = "0 seconds so far";
-
-		var startTime = new Date().getTime();
-		var timer = setInterval(function(){
-			var currentTime = new Date().getTime();
-			loading_timer.innerHTML = 
-				Math.round((currentTime - startTime) / 1000) + 
-				" seconds so far";
-			time_taken.value = Math.round((currentTime - startTime) / 100) / 10;
-		}, 1000);
-
-		iframe.onload = function()
-		{
-			loading_overlay.style.display = "none";
-			clearInterval(timer);
-			var currentTime = new Date().getTime();
-			time_taken.value = Math.round((currentTime - startTime) / 100) / 10;
-			// alert(url + " finished loading");
-
-			// Log results
-			$.ajax({
-				url: "http://www.aptivate.org/uploads/filer/2013/09/27/bandwidthlog.js",
-				data: {
-					url: url,
-					time: time_taken.value
-				},
-				dataType: 'jsonp'
-			});
-		};
-
-		if (url.substring(0, 4) != "http")
-		{
-			url = "http://" + url;
-		}
-
-		page_size.value = "...";
-		$.ajax({
-				url: "https://www.googleapis.com/pagespeedonline/v1/runPagespeed",
-				data: {
-					url: url,
-				},
-				dataType: 'jsonp',
-				success: handlePagespeedResult,
-				error: function(jqXHR, textStatus, errorThrown)
-				{
-					alert("PageSpeed request failed: " + 
-						textStatus + ": " + errorThrown);
-				}
-			});
-	}
-	catch (e)
-	{
-		alert(e);
-	}
-	finally
-	{
-		return false;
-	}
-}
-
-function handlePagespeedResult(data)
-{
-	if (data.error)
-	{
-		alert("PageSpeed request failed: " + data.error.message);
-		return;
-	}
-
-	var stats = data.pageStats;
-	var totalSize = 
-		parseInt(stats.htmlResponseBytes || 0) +
-		parseInt(stats.cssResponseBytes || 0) +
-		parseInt(stats.imageResponseBytes || 0) +
-		parseInt(stats.javascriptResponseBytes || 0) +
-		parseInt(stats.otherResponseBytes || 0);
-	page_size.value = Math.round(totalSize / 1024);
-}
-</script>
+<script type="text/javascript" src="lobandreport.js"></script>
 
 </body>
 </html>
